@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PDF QA Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>📄 PDF QA Assistant</h1>
+        <div class="chat-box" id="chat-box"></div>
+        <form id="chat-form">
+            <input type="text" id="user-input" placeholder="Ask a question..." required>
+            <button type="submit">Ask</button>
+        </form>
+    </div>
+
+    <script>
+        const chatForm = document.getElementById("chat-form");
+        const chatBox = document.getElementById("chat-box");
+
+        chatForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const userInput = document.getElementById("user-input");
+            const question = userInput.value;
+
+            chatBox.innerHTML += `<div class="user-msg"><strong>You:</strong> ${question}</div>`;
+            userInput.value = "";
+
+            const response = await fetch("/ask", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({question})
+            });
+
+            const data = await response.json();
+            chatBox.innerHTML += `<div class="bot-msg"><strong>Answer:</strong> ${data.answer}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    </script>
+</body>
+</html>
